@@ -13,40 +13,63 @@ const Home = () => {
     setFechaResultado,
     useDateDiff,
   } = useContext(GeneralContext);
+  // año actual
+  const currentDate = new Date();
+  //datos invalidos para el formulario
+  const [invalidYear, setInvalidYear] = useState(false);
+  const [invalidMonth, setInvalidMonth] = useState(false);
+  const [invalidDay, setInvalidDay] = useState(false);
   // --------------------------------------------------
+  const datoInvalido = () => {
+    return <p className="text-xs text-center text-red-600">Dato Invalido</p>;
+  }  
   // función para enviar el formulario
   const handleSubmit = (event) => {
     event.preventDefault();
-    useDateDiff();
+    
+    const invalidMessages = {
+      year:
+        formData.year < currentDate.getFullYear() + 1 || formData.year > 5000,
+      month: formData.month < 1 || formData.month > 12,
+      day:
+        formData.day < 1 ||
+        (formData.month === 2 &&
+          ((formData.year % 4 === 0 && formData.year % 100 !== 0) ||
+          formData.year % 400 === 0
+            ? formData.day > 29
+            : formData.day > 28)) ||
+        ((formData.month === 4 ||
+          formData.month === 6 ||
+          formData.month === 9 ||
+          formData.month === 11) &&
+          formData.day > 30) ||
+          formData.day > 31,
+    };
+
+    setInvalidYear(invalidMessages.year);
+    setInvalidMonth(invalidMessages.month);
+    setInvalidDay(invalidMessages.day);
+
+    if (
+      !invalidMessages.year &&
+      !invalidMessages.month &&
+      !invalidMessages.day
+    ) {
+      useDateDiff();
+    }
   };
-  // dia limite para el mes
-  const [dayLimit, setDayLimit] = useState(31);
   // función para actualizar el estado del formulario
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
-    // dia limite para el mes
-    if (formData.month === 2) {
-      setDayLimit(28);
-    }
-    if (
-      formData.month === 4 ||
-      formData.month === 6 ||
-      formData.month === 9 ||
-      formData.month === 11
-    ) {
-      setDayLimit(30);
-    }
   };
-  // año actual
-  const currentDate = new Date();
 
   // --------------------------------------------------
   return (
     <div className="w-8/12 h-5/6 rounded-3xl rounded-br-[200px] bg-white px-20 py-8 flex">
       <div className="w-5/6">
         {/* titulo */}
-        <div className="pb-8 border-b-2 w-full">
+        <div className="pb-8 border-b-2 w-full box-content">
           <form
             onSubmit={handleSubmit}
             className="flex items-center justify-left w-full gap-16 appearance-none"
@@ -57,12 +80,14 @@ const Home = () => {
                 type="number"
                 name="day"
                 min={1}
-                max={dayLimit}
+                max={31}
                 value={formData.day || ""}
                 onChange={handleChange}
                 placeholder="DD"
-                className=" border-2 border-gray-300 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                className={`${invalidDay ? "border-red-600" : "border-gray-300"}
+                  border-2 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent`}
               />
+              {invalidDay && datoInvalido()}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xl font-light">MES</label>
@@ -74,8 +99,12 @@ const Home = () => {
                 value={formData.month || ""}
                 onChange={handleChange}
                 placeholder="MM"
-                className=" border-2 border-gray-300 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                className={`${
+                  invalidMonth ? "border-red-600" : "border-gray-300"
+                }
+                  border-2 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent`}
               />
+              {invalidMonth && datoInvalido()}
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xl font-light">AÑO</label>
@@ -87,8 +116,12 @@ const Home = () => {
                 value={formData.year || ""}
                 onChange={handleChange}
                 placeholder="YYYY"
-                className=" border-2 border-gray-300 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                className={`${
+                  invalidYear ? "border-red-600" : "border-gray-300"
+                }
+                  border-2 rounded-lg w-36 h-12 text-3xl font-bold px-4 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent`}
               />
+              {invalidYear && datoInvalido()}
             </div>
           </form>
         </div>
