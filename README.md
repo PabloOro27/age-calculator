@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 # React + Vite
 
 esta es una prueba de git
+=======
+#aGE CALCULATOR
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+>>>>>>> b9ed09d066343026b1a790662ea684f8f5277833
 
 Currently, two official plugins are available:
 
